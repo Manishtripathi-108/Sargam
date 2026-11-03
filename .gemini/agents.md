@@ -99,7 +99,6 @@ Request → Route → Service → Provider → External API
 - Prod: structured JSON logs, level from `LOG_LEVEL` env (default `info`)
 - Use `req.log` inside route handlers, `app.log` in plugins
 - Log levels: `fatal` > `error` > `warn` > `info` > `debug` > `trace`
-- Use the `src/plugins/logger.ts` request-logger plugin for per-request logging with request ID, duration, status
 
 ### 12. Testing
 - **Bruno** for API testing (collection in `bruno/` directory)
