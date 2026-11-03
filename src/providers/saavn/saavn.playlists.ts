@@ -7,7 +7,7 @@ import { saavnClient } from './saavn.client';
 import { mapPlaylist } from './saavn.mapper';
 import SAAVN_ROUTES from './saavn.routes';
 
-export async function getById({ id, limit, offset }: { id: string; limit: number; offset: number }): Promise<Playlist> {
+export async function getById(id: string, limit = 10, offset = 0): Promise<Playlist> {
     const { page } = normalizePagination(limit, offset);
 
     const res = await saavnClient.get<SaavnPlaylistResponse>('/', {
@@ -22,15 +22,7 @@ export async function getById({ id, limit, offset }: { id: string; limit: number
     return mapPlaylist(assertData(res.data, '[Saavn] Playlist not found'));
 }
 
-export async function getByLink({
-    link,
-    offset,
-    limit,
-}: {
-    link: string;
-    offset: number;
-    limit: number;
-}): Promise<Playlist> {
+export async function getByLink(link: string, limit = 10, offset = 0): Promise<Playlist> {
     const token = extractId(link, 'saavn', 'playlist');
     const { page } = normalizePagination(limit, offset);
 

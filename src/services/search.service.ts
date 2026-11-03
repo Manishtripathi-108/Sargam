@@ -1,13 +1,6 @@
-import type {
-    GlobalSearchResult,
-    SearchAlbum,
-    SearchArtist,
-    SearchPlaylist,
-    SearchSong,
-} from '../types/core/search.model';
-import type { SearchParams } from '../types/services.types';
+import { resolveProvider, type ServiceOptions } from '../providers';
+import type { SearchParams } from '../types/core/search.model';
 import { AppError, wrapError } from '../utils/error.utils';
-import { resolveProvider, type ServiceOptions } from '../utils/provider.utils';
 import type { SearchType } from '../validators/common.validators';
 
 type SearchParamsWithOpts = SearchParams & {
@@ -20,7 +13,7 @@ export async function globalSearch(p: {
     limit: number;
     offset: number;
     opts: ServiceOptions;
-}): Promise<GlobalSearchResult | SearchSong | SearchAlbum | SearchArtist | SearchPlaylist> {
+}) {
     if (!p.query) {
         throw new AppError('Query is required', 400);
     }
@@ -41,19 +34,19 @@ export async function globalSearch(p: {
 export const searchSongs = (p: SearchParamsWithOpts) =>
     resolveProvider(p.opts)
         .search.songs(p)
-        .catch((e) => wrapError(e, 'Song search failed', 500));
+        .catch((e: unknown) => wrapError(e, 'Song search failed', 500));
 
 export const searchAlbums = (p: SearchParamsWithOpts) =>
     resolveProvider(p.opts)
         .search.albums(p)
-        .catch((e) => wrapError(e, 'Album search failed', 500));
+        .catch((e: unknown) => wrapError(e, 'Album search failed', 500));
 
 export const searchArtists = (p: SearchParamsWithOpts) =>
     resolveProvider(p.opts)
         .search.artists(p)
-        .catch((e) => wrapError(e, 'Artist search failed', 500));
+        .catch((e: unknown) => wrapError(e, 'Artist search failed', 500));
 
 export const searchPlaylists = (p: SearchParamsWithOpts) =>
     resolveProvider(p.opts)
         .search.playlists(p)
-        .catch((e) => wrapError(e, 'Playlist search failed', 500));
+        .catch((e: unknown) => wrapError(e, 'Playlist search failed', 500));

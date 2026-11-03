@@ -1,7 +1,7 @@
 import { isDev } from '../utils/environment.utils';
-import { formatZodValidationErrors } from '../utils/validation.utils';
 import { isAxiosError } from 'axios';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import type { ZodFastifySchemaValidationError } from 'fastify-type-provider-zod';
 import { hasZodFastifySchemaValidationErrors } from 'fastify-type-provider-zod';
 import http from 'http';
 
@@ -15,6 +15,23 @@ const isObject = (value: unknown): value is Record<string, unknown> => typeof va
 
 const getMessage = (value: unknown, fallback: string) =>
     typeof value === 'string' && value.length > 0 ? value : fallback;
+
+const normalizeZodPath = (path: string): string => {
+    const trimmed = path.replace(/^\/+/, '');
+    return trimmed || 'root';
+};
+
+const formatZodValidationErrors = (issues: ZodFastifySchemaValidationError[]) => {
+    return issues
+        .map((issue) => ({ path: normalizeZodPath(issue.instancePath), message: issue.message }))
+        .sort((a, b) => {
+            if (a.path < b.path) return -1;
+            if (a.path > b.path) return 1;
+            const msgA = a.message ?? '';
+            const msgB = b.message ?? '';
+            return msgA < msgB ? -1 : msgA > msgB ? 1 : 0;
+        });
+};
 
 const registerErrorHandler = async (app: FastifyInstance) => {
     app.setErrorHandler(async (err: unknown, req: FastifyRequest, reply: FastifyReply) => {

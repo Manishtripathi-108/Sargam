@@ -22,12 +22,10 @@ import type {
     SaavnSearchSongResponse,
     SaavnSongResponse,
 } from '../../types/saavn';
+import { createFallbackImageAsset, decodeHtmlEntities, safeParseNumber } from '../../utils/common.utils';
 import { decryptAudio } from '../../utils/decrypt.utils';
 import { AppError } from '../../utils/error.utils';
-import { createFallbackImageAsset } from '../../utils/image.utils';
-import { safeParseNumber } from '../../utils/number.utils';
 import { createPaginatedResponse } from '../../utils/pagination.utils';
-import { decodeHtmlEntities } from '../../utils/string.utils';
 import { upgradeToHttps } from '../../utils/url.utils';
 import type { SearchType } from '../../validators/common.validators';
 

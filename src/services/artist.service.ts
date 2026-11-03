@@ -1,12 +1,8 @@
-import type { Album } from '../types/core/album.model';
-import type { Artist } from '../types/core/artist.model';
-import type { Paginated } from '../types/core/pagination.model';
-import type { Song } from '../types/core/song.model';
+import { resolveProvider, type ServiceOptions } from '../providers';
 import { AppError, wrapError } from '../utils/error.utils';
-import { resolveProvider, type ServiceOptions } from '../utils/provider.utils';
 import type { SortBy, SortOrder } from '../validators/common.validators';
 
-export async function getArtistById(id: string, opts: ServiceOptions): Promise<Artist> {
+export async function getArtistById(id: string, opts: ServiceOptions) {
     if (!id) {
         throw new AppError('Artist id is required', 400);
     }
@@ -18,7 +14,7 @@ export async function getArtistById(id: string, opts: ServiceOptions): Promise<A
     }
 }
 
-export async function getArtistByLink(link: string, opts: ServiceOptions): Promise<Artist> {
+export async function getArtistByLink(link: string, opts: ServiceOptions) {
     if (!link) {
         throw new AppError('Artist link is required', 400);
     }
@@ -37,7 +33,7 @@ export async function getArtistSongs(params: {
     sortBy: SortBy;
     sortOrder: SortOrder;
     opts: ServiceOptions;
-}): Promise<Paginated<Song>> {
+}) {
     if (!params.id) {
         throw new AppError('Artist id is required', 400);
     }
@@ -56,7 +52,7 @@ export async function getArtistAlbums(params: {
     sortBy: SortBy;
     sortOrder: SortOrder;
     opts: ServiceOptions;
-}): Promise<Paginated<Omit<Album, 'songs'>>> {
+}) {
     if (!params.id) {
         throw new AppError('Artist id is required', 400);
     }

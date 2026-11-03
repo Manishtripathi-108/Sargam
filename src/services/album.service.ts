@@ -1,8 +1,7 @@
-import type { Album } from '../types/core/album.model';
+import { resolveProvider, type ServiceOptions } from '../providers';
 import { AppError, wrapError } from '../utils/error.utils';
-import { resolveProvider, type ServiceOptions } from '../utils/provider.utils';
 
-export async function getAlbumById(id: string, opts: ServiceOptions): Promise<Album> {
+export async function getAlbumById(id: string, opts: ServiceOptions) {
     if (!id) {
         throw new AppError('Album id is required', 400);
     }
@@ -14,7 +13,7 @@ export async function getAlbumById(id: string, opts: ServiceOptions): Promise<Al
     }
 }
 
-export async function getAlbumByLink(link: string, opts: ServiceOptions): Promise<Album> {
+export async function getAlbumByLink(link: string, opts: ServiceOptions) {
     if (!link) {
         throw new AppError('Album link is required', 400);
     }

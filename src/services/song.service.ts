@@ -1,8 +1,7 @@
-import type { Song } from '../types/core/song.model';
+import { resolveProvider, type ServiceOptions } from '../providers';
 import { AppError, wrapError } from '../utils/error.utils';
-import { resolveProvider, type ServiceOptions } from '../utils/provider.utils';
 
-export async function getSongById(id: string, opts: ServiceOptions): Promise<Song> {
+export async function getSongById(id: string, opts: ServiceOptions) {
     if (!id) {
         throw new AppError('Song id is required', 400);
     }
@@ -14,7 +13,7 @@ export async function getSongById(id: string, opts: ServiceOptions): Promise<Son
     }
 }
 
-export async function getSongsByIds(ids: string, opts: ServiceOptions): Promise<Song[]> {
+export async function getSongsByIds(ids: string, opts: ServiceOptions) {
     try {
         return await resolveProvider(opts).songs.getByIds(ids);
     } catch (err) {
@@ -22,7 +21,7 @@ export async function getSongsByIds(ids: string, opts: ServiceOptions): Promise<
     }
 }
 
-export async function getSongByLink(link: string, opts: ServiceOptions): Promise<Song> {
+export async function getSongByLink(link: string, opts: ServiceOptions) {
     if (!link) {
         throw new AppError('Link is required', 400);
     }
@@ -34,9 +33,9 @@ export async function getSongByLink(link: string, opts: ServiceOptions): Promise
     }
 }
 
-export async function getSongSuggestions(id: string, limit = 10, opts: ServiceOptions): Promise<Song[]> {
+export async function getSongSuggestions(id: string, limit = 10, opts: ServiceOptions) {
     try {
-        return await await resolveProvider(opts).songs.getSuggestions(id, limit);
+        return await resolveProvider(opts).songs.getSuggestions(id, limit);
     } catch (err) {
         return wrapError(err, 'Failed to fetch suggestions', 500);
     }

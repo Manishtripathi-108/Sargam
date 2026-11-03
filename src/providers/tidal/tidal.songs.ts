@@ -10,8 +10,9 @@ export async function getById(id: string) {
     return assertData(res.data, '[Tidal] Track not found');
 }
 
-export async function getByIds(ids: string[]) {
-    const tracks = await Promise.all(ids.map((id) => getById(id).catch(() => null)));
+export async function getByIds(ids: string) {
+    const idList = ids.split(',').map((id) => id.trim());
+    const tracks = await Promise.all(idList.map((id) => getById(id).catch(() => null)));
 
     return tracks.filter((track): track is TidalTrack => track !== null);
 }

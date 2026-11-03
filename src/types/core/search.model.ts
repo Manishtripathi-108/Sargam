@@ -6,6 +6,16 @@ import type { Paginated } from './pagination.model';
 import type { Playlist } from './playlist.model';
 import type { SongBase } from './song.model';
 
+export type SearchParams = {
+    query: string;
+    limit: number;
+    offset: number;
+};
+
+export type GlobalSearchParams = SearchParams & {
+    type: SearchType;
+};
+
 export type SearchBase = {
     id: string;
     name: string;

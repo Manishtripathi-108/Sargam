@@ -1,8 +1,7 @@
-import type { Playlist } from '../types/core/playlist.model';
+import { resolveProvider, type ServiceOptions } from '../providers';
 import { AppError, wrapError } from '../utils/error.utils';
-import { resolveProvider, type ServiceOptions } from '../utils/provider.utils';
 
-export async function getPlaylistById(id: string, opts: ServiceOptions): Promise<Playlist> {
+export async function getPlaylistById(id: string, opts: ServiceOptions) {
     if (!id) {
         throw new AppError('Playlist id is required', 400);
     }
@@ -14,7 +13,7 @@ export async function getPlaylistById(id: string, opts: ServiceOptions): Promise
     }
 }
 
-export async function getPlaylistByLink(link: string, opts: ServiceOptions): Promise<Playlist> {
+export async function getPlaylistByLink(link: string, opts: ServiceOptions) {
     if (!link) {
         throw new AppError('Playlist link is required', 400);
     }

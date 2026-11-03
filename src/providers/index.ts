@@ -1,27 +1,29 @@
-import { GaanaProvider } from '../providers/gaana/gaana.provider';
-import { QobuzProvider } from '../providers/qobuz/qobuz.provider';
-import { SaavnProvider } from '../providers/saavn/saavn.provider';
+import { AppError } from '../utils/error.utils';
 import type { Provider } from '../validators/common.validators';
-import { AppError } from './error.utils';
+import { GaanaProvider } from './gaana/gaana.provider';
+import { QobuzProvider } from './qobuz/qobuz.provider';
+import { SaavnProvider } from './saavn/saavn.provider';
+import { TidalProvider } from './tidal/tidal.provider';
 
 export type ServiceOptions = {
     provider: Provider;
 };
 
-const providerRegistry = {
+export const providerRegistry = {
     qobuz: QobuzProvider,
     saavn: SaavnProvider,
     gaana: GaanaProvider,
+    tidal: TidalProvider,
 };
 
 /**
  * Resolves a provider instance based on the given options.
  * Defaults to 'saavn' if no provider is specified.
- * @param opts - Optional service options containing the provider name.
+ * @param opts - Service options containing the provider name.
  * @returns The provider instance.
  * @throws {AppError} If the provider is not found in the registry.
  * @example
- * resolveProvider() => SaavnProvider
+ * resolveProvider({ provider: 'saavn' }) => SaavnProvider
  * resolveProvider({ provider: 'gaana' }) => GaanaProvider
  */
 export function resolveProvider(opts: ServiceOptions) {
@@ -31,3 +33,5 @@ export function resolveProvider(opts: ServiceOptions) {
     }
     return provider;
 }
+
+export { GaanaProvider, QobuzProvider, SaavnProvider, TidalProvider };

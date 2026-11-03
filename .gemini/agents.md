@@ -11,20 +11,20 @@
 Request → Route → Service → Provider → External API
                                 ↑
                           resolveProvider()
-                          (src/utils/provider.utils.ts)
+                          (src/providers/index.ts)
 ```
 
 ### Layer responsibilities
 
-| Layer          | Directory               | Does                                                           | Does NOT                                     |
-| -------------- | ----------------------- | -------------------------------------------------------------- | -------------------------------------------- |
-| **Routes**     | `src/routes/`           | Validate input (Zod schemas), extract params, call service     | Business logic, provider logic, direct HTTP  |
-| **Services**   | `src/services/`         | Orchestrate providers via `resolveProvider()`, error wrapping  | HTTP calls, data mapping, route registration |
-| **Providers**  | `src/providers/{name}/` | HTTP calls, response mapping, provider-specific logic          | Route registration, validation               |
-| **Plugins**    | `src/plugins/`          | Cross-cutting concerns (DB, CORS, JWT, error handler, logging) | Business logic                               |
-| **Types**      | `src/types/`            | Type definitions, response shapes                              | Runtime logic                                |
-| **Validators** | `src/validators/`       | Zod schemas and type exports                                   | Anything else                                |
-| **Utils**      | `src/utils/`            | Pure utility functions                                         | Side effects, business logic                 |
+| Layer          | Directory         | Does                                                           | Does NOT                                     |
+| -------------- | ----------------- | -------------------------------------------------------------- | -------------------------------------------- |
+| **Routes**     | `src/routes/`     | Validate input (Zod schemas), extract params, call service     | Business logic, provider logic, direct HTTP  |
+| **Services**   | `src/services/`   | Orchestrate providers via `resolveProvider()`, error wrapping  | HTTP calls, data mapping, route registration |
+| **Providers**  | `src/providers/`  | `index.ts` provider registry & `{name}/` provider modules      | Route registration, validation               |
+| **Plugins**    | `src/plugins/`    | Cross-cutting concerns (DB, CORS, JWT, error handler, success) | Business logic                               |
+| **Types**      | `src/types/`      | Type definitions, core response shapes, provider API models    | Runtime logic                                |
+| **Validators** | `src/validators/` | Zod schemas and type exports                                   | Anything else                                |
+| **Utils**      | `src/utils/`      | Pure utility functions                                         | Side effects, business logic                 |
 
 ---
 
@@ -32,14 +32,15 @@ Request → Route → Service → Provider → External API
 
 ### 1. Provider Pattern
 
-- Every music provider lives in `src/providers/{name}/` with exactly this file structure:
-    - `index.ts` — single aggregation export object
+- Every music provider lives in `src/providers/{name}/` with this structure:
+    - `{name}.provider.ts` — single aggregation export object
     - `{name}.client.ts` — Axios instance + interceptors
     - `{name}.routes.ts` — API endpoint constants (as `const` object)
-    - `{name}.mapper.ts` — maps raw API response → core models
+    - `{name}.mapper.ts` (if applicable) — maps raw API response → core models
     - `{name}.search.ts`, `{name}.songs.ts`, `{name}.albums.ts`, `{name}.artists.ts`, `{name}.playlists.ts` — domain modules
+- The providers root `src/providers/index.ts` acts as the registry and single entry point exporting `resolveProvider()`, `providerRegistry`, and `ServiceOptions`.
 - Provider objects **must** expose: `{ search, songs, albums, artists, playlists }` (minimum)
-- Adding a provider = add to `providerEnum` in `src/validators/common.validators.ts` AND to `providerRegistry` in `src/utils/provider.utils.ts`
+- Adding a provider = add to `providerEnum` in `src/validators/common.validators.ts` AND to `providerRegistry` in `src/providers/index.ts`
 
 ### 2. Unified Core Models
 
@@ -47,7 +48,7 @@ Request → Route → Service → Provider → External API
     - `Song`, `SongBase`, `Album`, `AlbumBase`, `Artist`, `ArtistBase`, `Playlist`, `PlaylistBase`
     - `ImageAsset` (`{ low, medium, high }`)
     - `Paginated<T>` (`{ items, total, limit, offset, hasNext }`)
-    - Search types: `GlobalSearchResult`, `SearchSong`, `SearchAlbum`, `SearchArtist`, `SearchPlaylist`
+    - Search types: `GlobalSearchResult`, `SearchSong`, `SearchAlbum`, `SearchArtist`, `SearchPlaylist`, `SearchParams`, `GlobalSearchParams`
 - **Never change core model shapes** without updating ALL provider mappers
 
 ### 3. Validation
@@ -135,7 +136,7 @@ Request → Route → Service → Provider → External API
 1. Create `src/providers/{name}/` with all required files
 2. Add provider-specific types in `src/types/{name}/`
 3. Add to `providerEnum` in validators
-4. Add to `providerRegistry` in `provider.utils.ts`
+4. Add to `providerRegistry` in `src/providers/index.ts`
 5. Add env vars to `.env.example` and env plugin schema
 6. Add Bruno test requests in `bruno/{name}/`
 7. Add docs in `docs/provider-notes/{name}.md`
@@ -150,7 +151,7 @@ Request → Route → Service → Provider → External API
 
 ### New Utility
 
-1. Add to `src/utils/` with `{name}.utils.ts` naming
+1. Add to `src/utils/` with `{name}.utils.ts` naming and re-export from `src/utils/index.ts`
 2. Pure functions only — no side effects
 3. Add JSDoc with `@example`
 

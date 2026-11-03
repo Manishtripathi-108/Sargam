@@ -4,6 +4,7 @@ import type {
     SearchArtist,
     SearchPlaylist,
     SearchSong,
+    SearchParams,
 } from '../../types/core/search.model';
 import type {
     SaavnSearchAlbumResponse,
@@ -12,7 +13,6 @@ import type {
     SaavnSearchResponse,
     SaavnSearchSongResponse,
 } from '../../types/saavn';
-import type { SearchParams } from '../../types/services.types';
 import { assertData } from '../../utils/error.utils';
 import { normalizePagination } from '../../utils/pagination.utils';
 import { saavnClient } from './saavn.client';
