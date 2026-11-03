@@ -1,5 +1,3 @@
-import type { QobuzPaginatedList } from './common.types';
-
 export type QobuzUserCredentials = {
     email: string;
     password: string;

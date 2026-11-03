@@ -46,7 +46,7 @@ export async function getByLink(link: string) {
 }
 
 export async function getSuggestions(seokey: string, limit: number) {
-    const res = await gaanaClient.post('/', null, {
+    const res = await gaanaClient.post<Record<string, unknown>>('/', null, {
         params: {
             seokey,
             limit,
@@ -54,18 +54,16 @@ export async function getSuggestions(seokey: string, limit: number) {
         },
     });
 
-    const data = assertData(res.data, '[Gaana] No suggestions found');
-
-    return data;
+    return assertData(res.data, '[Gaana] No suggestions found');
 }
 
 export async function getLyrics(seokey: string) {
-    const res = await gaanaClient.post('/', null, {
+    const res = await gaanaClient.post<Record<string, unknown>>('/', null, {
         params: {
             seokey,
             type: GAANA_ROUTES.SONG.LYRICS,
         },
     });
 
-    const data = assertData(res.data, '[Gaana] Lyrics not found');
+    return assertData(res.data, '[Gaana] Lyrics not found');
 }

@@ -22,6 +22,16 @@ export async function getByLink(link: string) {
     return getById(id);
 }
 
+export async function getByIds(ids: string | string[]) {
+    const idList = Array.isArray(ids) ? ids : ids.split(',').map((id) => id.trim());
+    const tracks = await Promise.all(idList.map((id) => getById(id).catch(() => null)));
+    return tracks.filter((track): track is QobuzTrack => track !== null);
+}
+
+export async function getSuggestions(_trackId: string, _limit = 10): Promise<QobuzTrack[]> {
+    return [];
+}
+
 /**
  * Get stream URL directly from Qobuz API (requires app secret - extracted if not in env)
  */

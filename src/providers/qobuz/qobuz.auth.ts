@@ -1,4 +1,4 @@
-import type { QobuzLoginResponse, QobuzUserCredentials } from '../../types/qobuz';
+import type { QobuzLoginResponse, QobuzUser, QobuzUserCredentials } from '../../types/qobuz';
 import { AppError, assertData } from '../../utils/error.utils';
 import { qobuzClient } from './qobuz.client';
 import QOBUZ_ROUTES from './qobuz.routes';
@@ -107,7 +107,7 @@ export async function getCurrentUser() {
         throw new AppError('[Qobuz] User not authenticated', 401);
     }
 
-    const res = await qobuzClient.get(QOBUZ_ROUTES.USER.GET, {
+    const res = await qobuzClient.get<QobuzUser>(QOBUZ_ROUTES.USER.GET, {
         params: { user_id: userSession.userId },
         headers: { 'X-User-Auth-Token': userSession.userAuthToken },
     });

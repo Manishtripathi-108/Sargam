@@ -54,6 +54,8 @@ export async function getTopTracks({
     });
 }
 
+export const getSongs = getTopTracks;
+
 export async function getAlbums({
     id,
     limit,

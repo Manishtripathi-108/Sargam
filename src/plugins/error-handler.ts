@@ -51,7 +51,8 @@ const registerErrorHandler = async (app: FastifyInstance) => {
             const statusCode = err.response?.status ?? 502;
             const statusMessage = http.STATUS_CODES[statusCode] ?? 'Bad Gateway';
 
-            const message = getMessage(err.response?.data?.message ?? err.message, statusMessage);
+            const responseData = isObject(err.response?.data) ? err.response.data : null;
+            const message = getMessage(responseData?.message ?? err.message, statusMessage);
 
             req.log.error({ err, url: req.url, method: req.method }, 'axios_error');
 

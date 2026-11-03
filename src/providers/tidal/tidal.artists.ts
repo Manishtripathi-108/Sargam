@@ -47,6 +47,8 @@ export async function getTopTracks({ id, limit, offset }: { id: string; limit: n
     });
 }
 
+export const getSongs = getTopTracks;
+
 export async function getAlbums({ id, limit, offset }: { id: string; limit: number; offset: number }) {
     const { limit: safeLimit, offset: safeOffset } = normalizePagination(limit, offset);
 

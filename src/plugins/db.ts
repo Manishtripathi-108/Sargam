@@ -5,6 +5,12 @@ import 'dotenv/config';
 import type { FastifyPluginAsync, FastifyPluginOptions } from 'fastify';
 import fp from 'fastify-plugin';
 
+declare module 'fastify' {
+    interface FastifyInstance {
+        db: PrismaClient;
+    }
+}
+
 type DbPluginOptions = FastifyPluginOptions & {
     prismaOptions?: ConstructorParameters<typeof PrismaClient>[0];
     connectTimeoutMs?: number;
@@ -70,9 +76,9 @@ const dbPlugin: FastifyPluginAsync<DbPluginOptions> = async (app, opts = {}) => 
                 await Promise.race([prisma.$connect(), timeout]);
                 app.log.info('prisma connected');
                 break;
-            } catch (err: any) {
+            } catch (err: unknown) {
                 attempts++;
-                if (err?.name === 'PrismaClientInitializationError') {
+                if (err instanceof Error && err.name === 'PrismaClientInitializationError') {
                     app.log.error({ err }, 'PrismaClient initialization failed');
                     app.log.error('Run npx prisma generate and verify generated client path');
                     throw err;
@@ -92,9 +98,9 @@ const dbPlugin: FastifyPluginAsync<DbPluginOptions> = async (app, opts = {}) => 
 
     await connectWithRetries();
 
-    app.addHook('onClose', async (instance) => {
+    app.addHook('onClose', async () => {
         try {
-            await instance.db.$disconnect();
+            await prisma.$disconnect();
             app.log.info('prisma disconnected via onClose');
         } catch (err) {
             app.log.error({ err }, 'error disconnecting prisma on onClose');

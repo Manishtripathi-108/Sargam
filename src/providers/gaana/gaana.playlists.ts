@@ -1,13 +1,11 @@
+import type { GaanaPlaylistResponse } from '../../types/gaana';
 import { assertData } from '../../utils/error.utils';
-import { normalizePagination } from '../../utils/pagination.utils';
 import { extractId } from '../../utils/url.utils';
 import { gaanaClient } from './gaana.client';
 import GAANA_ROUTES from './gaana.routes';
 
 export async function getById(id: string) {
-    // const { page } = normalizePagination(limit, offset);
-
-    const res = await gaanaClient.post('/', null, {
+    const res = await gaanaClient.post<GaanaPlaylistResponse>('/', null, {
         params: {
             seokey: id,
             page: 0,
@@ -21,9 +19,8 @@ export async function getById(id: string) {
 
 export async function getByLink(link: string) {
     const seokey = extractId(link, 'gaana', 'playlist');
-    // const { page } = normalizePagination(limit, offset);
 
-    const res = await gaanaClient.post('/', null, {
+    const res = await gaanaClient.post<GaanaPlaylistResponse>('/', null, {
         params: {
             seokey,
             page: 0,

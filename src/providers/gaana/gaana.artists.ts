@@ -4,8 +4,9 @@ import type { Paginated } from '../../types/core/pagination.model';
 import type { Song } from '../../types/core/song.model';
 import type { GaanaArtistResponse, GaanaArtistTrackResponse } from '../../types/gaana';
 import { assertData } from '../../utils/error.utils';
+import { safeParseNumber } from '../../utils/number.utils';
 import { createPaginatedResponse, normalizePagination } from '../../utils/pagination.utils';
-import { extractSeoToken } from '../../utils/url.utils';
+import { extractId } from '../../utils/url.utils';
 import { gaanaClient } from './gaana.client';
 import GAANA_ROUTES from './gaana.routes';
 
@@ -21,7 +22,7 @@ export async function getById(id: string): Promise<Artist> {
 }
 
 export async function getByLink(link: string): Promise<Artist> {
-    const seokey = extractSeoToken(link, 'gaana', 'artist');
+    const seokey = extractId(link, 'gaana', 'artist');
 
     const res = await gaanaClient.post<GaanaArtistResponse>('/', null, {
         params: {
@@ -61,10 +62,10 @@ export async function getSongs({
     const data = assertData(res.data, '[Gaana] Artist tracks not found');
 
     return createPaginatedResponse({
-        items: data,
+        items: data.entities ?? [],
         offset: (page - 1) * 10,
-        total: 0,
-        hasNext: false,
+        total: safeParseNumber(data.count),
+        hasNext: !data.eof,
     });
 }
 
@@ -97,9 +98,9 @@ export async function getAlbums({
     const data = assertData(res.data, '[Gaana] Artist albums not found');
 
     return createPaginatedResponse({
-        items: data,
+        items: data.entities ?? [],
         offset: (page - 1) * 10,
-        total: 0,
-        hasNext: false,
+        total: safeParseNumber(data.count),
+        hasNext: !data.eof,
     });
 }

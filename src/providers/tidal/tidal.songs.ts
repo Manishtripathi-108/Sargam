@@ -22,6 +22,10 @@ export async function getByLink(link: string) {
     return getById(id);
 }
 
+export async function getSuggestions(_id: string, _limit = 10): Promise<TidalTrack[]> {
+    return [];
+}
+
 export async function getByIsrc(isrc: string) {
     const res = await tidalClient.get<TidalPaginatedResponse<TidalTrack>>(TIDAL_ROUTES.SEARCH.TRACKS, {
         params: {
