@@ -1,0 +1,16 @@
+meta {
+  name: Get Album by ID (query)
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/albums?id=1142502&provider=saavn
+  body: none
+  auth: none
+}
+
+params:query {
+  id: 1142502
+  provider: saavn
+}

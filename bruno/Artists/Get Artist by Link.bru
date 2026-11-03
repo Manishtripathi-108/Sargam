@@ -1,0 +1,16 @@
+meta {
+  name: Get Artist by Link
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/artists?link=https://www.jiosaavn.com/artist/arijit-singh-songs/LlRWpHzy3Hk_&provider=saavn
+  body: none
+  auth: none
+}
+
+params:query {
+  link: https://www.jiosaavn.com/artist/arijit-singh-songs/LlRWpHzy3Hk_
+  provider: saavn
+}

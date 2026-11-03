@@ -1,0 +1,18 @@
+meta {
+  name: Search Playlists
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/search/playlists?q=bollywood hits&limit=10&offset=0&provider=saavn
+  body: none
+  auth: none
+}
+
+params:query {
+  q: bollywood hits
+  limit: 10
+  offset: 0
+  provider: saavn
+}

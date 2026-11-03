@@ -1,0 +1,19 @@
+meta {
+  name: Artist Albums
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/artists/459320/albums?limit=10&offset=0&sortBy=latest&sortOrder=desc&provider=saavn
+  body: none
+  auth: none
+}
+
+params:query {
+  limit: 10
+  offset: 0
+  sortBy: latest
+  sortOrder: desc
+  provider: saavn
+}
