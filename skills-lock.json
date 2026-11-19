@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "prisma-postgres-upgrade": {
+      "source": "prisma/skills",
+      "sourceType": "github",
+      "skillPath": "prisma-postgres-upgrade/SKILL.md",
+      "computedHash": "8e1bc28abc1de753a0cdf486af68c064630d3e0be0fadf1161ad8f52257439a7"
+    }
+  }
+}

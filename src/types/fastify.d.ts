@@ -1,10 +1,10 @@
 import type { Services } from '../services/types';
-import type { PrismaClient } from '@prisma/client';
+import type { DbClient } from '../db';
 import 'fastify';
 
 declare module 'fastify' {
     interface FastifyInstance {
-        db: PrismaClient;
+        db: DbClient;
         services: Services;
     }
     interface FastifyReply {

@@ -12,3 +12,10 @@ dist/
 
 # Generated files
 /src/generated/prisma
+
+/.agents
+/.claude
+/.cursor
+/.devin
+/.gemini
+/.vscode
