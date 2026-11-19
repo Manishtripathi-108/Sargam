@@ -10,8 +10,8 @@ export async function getById(id: string) {
     return assertData(res.data, '[Tidal] Track not found');
 }
 
-export async function getByIds(ids: string) {
-    const idList = ids.split(',').map((id) => id.trim());
+export async function getByIds(ids: string | string[]) {
+    const idList = Array.isArray(ids) ? ids : ids.split(',').map((id) => id.trim());
     const tracks = await Promise.all(idList.map((id) => getById(id).catch(() => null)));
 
     return tracks.filter((track): track is TidalTrack => track !== null);
@@ -23,7 +23,35 @@ export async function getByLink(link: string) {
     return getById(id);
 }
 
-export async function getSuggestions(_id: string, _limit = 10): Promise<TidalTrack[]> {
+export async function getSuggestions(id: string, limit = 10): Promise<TidalTrack[]> {
+    try {
+        const track = await getById(id);
+        const mixId = (track as unknown as { mixes?: { TRACK_MIX?: string } })?.mixes?.TRACK_MIX;
+
+        if (mixId) {
+            const res = await tidalClient.get<{ items: Array<{ item: TidalTrack }> }>(`/mixes/${mixId}/items`, {
+                params: { limit },
+            });
+            if (res.data?.items?.length) {
+                return res.data.items
+                    .map((i) => i.item)
+                    .filter((t): t is TidalTrack => Boolean(t && t.id && t.id !== Number(id)))
+                    .slice(0, limit);
+            }
+        }
+
+        // Fallback: artist top tracks if track mix is not available
+        if (track.artist?.id) {
+            const res = await tidalClient.get<TidalPaginatedResponse<TidalTrack>>(
+                TIDAL_ROUTES.ARTIST.TOP_TRACKS.replace('{id}', String(track.artist.id)),
+                { params: { limit } }
+            );
+            return (res.data?.items || []).filter((t) => t.id !== Number(id)).slice(0, limit);
+        }
+    } catch {
+        // Fallback gracefully to empty array
+    }
+
     return [];
 }
 

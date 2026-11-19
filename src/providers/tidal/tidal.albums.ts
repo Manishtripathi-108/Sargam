@@ -8,11 +8,22 @@ import TIDAL_ROUTES from './tidal.routes';
 export async function getById(id: string) {
     const res = await tidalClient.get<TidalAlbum>(`${TIDAL_ROUTES.ALBUM.DETAILS}/${id}`);
 
-    return assertData(res.data, '[Tidal] Album not found');
+    const album = assertData(res.data, '[Tidal] Album not found');
+
+    try {
+        const tracksRes = await getTracks({ id, limit: 100, offset: 0 });
+        return {
+            ...album,
+            tracks: tracksRes.items,
+        };
+    } catch {
+        return album;
+    }
 }
 
-export async function getByIds(ids: string[]) {
-    const albums = await Promise.all(ids.map((id) => getById(id).catch(() => null)));
+export async function getByIds(ids: string | string[]) {
+    const idList = Array.isArray(ids) ? ids : ids.split(',').map((id) => id.trim());
+    const albums = await Promise.all(idList.map((id) => getById(id).catch(() => null)));
 
     return albums.filter((album): album is TidalAlbum => album !== null);
 }
@@ -23,7 +34,7 @@ export async function getByLink(link: string) {
     return getById(id);
 }
 
-export async function getTracks({ id, limit, offset }: { id: string; limit: number; offset: number }) {
+export async function getTracks({ id, limit, offset }: { id: string; limit?: number; offset?: number }) {
     const { limit: safeLimit, offset: safeOffset } = normalizePagination(limit, offset);
 
     const res = await tidalClient.get<TidalPaginatedResponse<TidalTrack>>(

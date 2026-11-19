@@ -8,7 +8,17 @@ import TIDAL_ROUTES from './tidal.routes';
 export async function getById(id: string) {
     const res = await tidalClient.get<TidalPlaylist>(`${TIDAL_ROUTES.PLAYLIST.DETAILS}/${id}`);
 
-    return assertData(res.data, '[Tidal] Playlist not found');
+    const playlist = assertData(res.data, '[Tidal] Playlist not found');
+
+    try {
+        const tracksRes = await getTracks({ id, limit: 100, offset: 0 });
+        return {
+            ...playlist,
+            tracks: tracksRes.items,
+        };
+    } catch {
+        return playlist;
+    }
 }
 
 export async function getByLink(link: string) {
@@ -17,8 +27,8 @@ export async function getByLink(link: string) {
     return getById(id);
 }
 
-export async function getTracks({ id, limit, offset }: { id: string; limit: number; offset: number }) {
-    const { limit: safeLimit, offset: safeOffset } = normalizePagination(limit, offset);
+export async function getTracks({ id, limit, offset }: { id: string; limit?: number; offset?: number }) {
+    const { limit: safeLimit, offset: safeOffset } = normalizePagination(limit ?? 10, offset ?? 0);
 
     const res = await tidalClient.get<TidalPaginatedResponse<TidalTrack>>(
         TIDAL_ROUTES.PLAYLIST.TRACKS.replace('{uuid}', id),
@@ -41,8 +51,8 @@ export async function getTracks({ id, limit, offset }: { id: string; limit: numb
     });
 }
 
-export async function getItems({ id, limit, offset }: { id: string; limit: number; offset: number }) {
-    const { limit: safeLimit, offset: safeOffset } = normalizePagination(limit, offset);
+export async function getItems({ id, limit, offset }: { id: string; limit?: number; offset?: number }) {
+    const { limit: safeLimit, offset: safeOffset } = normalizePagination(limit ?? 10, offset ?? 0);
 
     const res = await tidalClient.get<TidalPaginatedResponse<TidalPlaylistItem>>(
         TIDAL_ROUTES.PLAYLIST.ITEMS.replace('{uuid}', id),

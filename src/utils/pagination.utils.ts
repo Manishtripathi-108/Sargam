@@ -10,9 +10,9 @@ import type { Paginated } from '../types/core/pagination.model';
  * normalizePagination(10, 0) => { page: 1, limit: 10, offset: 0 }
  * normalizePagination(200, -5) => { page: 1, limit: 100, offset: 0 }
  */
-export const normalizePagination = (limit: number, offset: number) => {
-    const safeLimit = Math.max(1, Math.min(limit || 10, 100));
-    const safeOffset = Math.max(0, offset || 0);
+export const normalizePagination = (limit = 10, offset = 0) => {
+    const safeLimit = Math.max(1, Math.min(limit, 100));
+    const safeOffset = Math.max(0, offset);
     const page = Math.floor(safeOffset / safeLimit) + 1;
     return { page, limit: safeLimit, offset: safeOffset };
 };

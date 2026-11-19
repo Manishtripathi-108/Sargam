@@ -1,6 +1,6 @@
 import { getBrowserHeaders } from '../../constants/user-agents.constants';
 import { AppError } from '../../utils/error.utils';
-import { getAccessToken } from './tidal.auth';
+import { getAccessToken, resetToken } from './tidal.auth';
 import TIDAL_ROUTES from './tidal.routes';
 import axios, { type AxiosError } from 'axios';
 
@@ -10,7 +10,13 @@ type TidalErrorResponse = {
     userMessage?: string;
 };
 
-const countryCode = process.env.TIDAL_COUNTRY_CODE || 'US';
+export const getCountryCode = () => process.env.TIDAL_COUNTRY_CODE || 'US';
+
+export const isTidalConfigured = () => true;
+
+export const resetTidalClient = () => {
+    resetToken();
+};
 
 export const tidalClient = axios.create({
     baseURL: TIDAL_ROUTES.BASE,
@@ -19,12 +25,7 @@ export const tidalClient = axios.create({
         origin: 'https://tidal.com',
         referer: 'https://tidal.com/',
     },
-    params: { countryCode },
 });
-
-async function bootstrapClient(): Promise<void> {}
-
-void bootstrapClient();
 
 tidalClient.interceptors.request.use(async (config) => {
     const token = await getAccessToken();
@@ -41,7 +42,13 @@ tidalClient.interceptors.request.use(async (config) => {
         }
     }
 
-    tidalClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    config.headers.set('Authorization', `Bearer ${token}`);
+
+    const currentParams = (config.params as Record<string, unknown> | undefined) ?? {};
+    config.params = {
+        countryCode: getCountryCode(),
+        ...currentParams,
+    };
 
     return config;
 });
@@ -52,13 +59,16 @@ tidalClient.interceptors.response.use(
         if (error.response) {
             const { status, data } = error.response;
 
+            if (status === 401) {
+                resetToken();
+                throw new AppError('[Tidal] Authentication failed', 401);
+            }
+
             switch (status) {
-                case 401:
-                    throw new AppError('[Tidal] Authentication failed', 401);
                 case 403:
                     throw new AppError('[Tidal] Access forbidden', 403);
                 case 404:
-                    throw new AppError('[Tidal] Resource not found', 404);
+                    throw new AppError(data?.userMessage || '[Tidal] Resource not found', 404);
                 case 429:
                     throw new AppError('[Tidal] Rate limit exceeded', 429);
                 default:

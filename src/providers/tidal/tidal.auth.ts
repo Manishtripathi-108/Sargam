@@ -1,23 +1,18 @@
-import { AppError } from '../../utils/error.utils';
 import TIDAL_ROUTES from './tidal.routes';
 import axios from 'axios';
 
 let cachedToken: { accessToken: string; expiresAt: number } | null = null;
 
 const getConfig = () => {
-    const clientId = process.env.TIDAL_CLIENT_ID;
-    const clientSecret = process.env.TIDAL_CLIENT_SECRET;
-
-    if (!clientId) {
-        throw new AppError('[Tidal] TIDAL_CLIENT_ID environment variable is not set', 500);
-    }
-
-    if (!clientSecret) {
-        throw new AppError('[Tidal] TIDAL_CLIENT_SECRET environment variable is not set', 500);
-    }
+    const clientId = process.env.TIDAL_CLIENT_ID!;
+    const clientSecret = process.env.TIDAL_CLIENT_SECRET!;
 
     return { clientId, clientSecret };
 };
+
+export function resetToken(): void {
+    cachedToken = null;
+}
 
 export async function getAccessToken(): Promise<string> {
     const now = Date.now();
