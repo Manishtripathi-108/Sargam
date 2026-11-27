@@ -1,0 +1,31 @@
+info:
+  name: Artist Songs
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/artists/459320/songs?limit=10&offset=0&sortBy=popularity&sortOrder=desc&provider=saavn"
+  params:
+    - name: limit
+      value: "10"
+      type: query
+    - name: offset
+      value: "0"
+      type: query
+    - name: sortBy
+      value: popularity
+      type: query
+    - name: sortOrder
+      value: desc
+      type: query
+    - name: provider
+      value: saavn
+      type: query
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true

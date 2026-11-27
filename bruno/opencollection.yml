@@ -1,0 +1,14 @@
+opencollection: 1.0.0
+
+info:
+  name: Sargam API
+bundled: false
+extensions:
+  bruno:
+    ignore:
+      - node_modules
+      - .git
+    presets:
+      request:
+        type: http
+      defaultEnvironment: local

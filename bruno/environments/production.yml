@@ -1,0 +1,3 @@
+variables:
+  - name: baseUrl
+    value: https://api.sargam.example.com
