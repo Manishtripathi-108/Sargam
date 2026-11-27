@@ -1,6 +1,7 @@
 import type { GaanaAlbumResponse } from '../../types/gaana';
 import { assertData } from '../../utils/error.utils';
-import { extractSeoToken } from '../../utils/url.utils';
+import { createPaginatedResponse, normalizePagination } from '../../utils/pagination.utils';
+import { extractId } from '../../utils/url.utils';
 import { gaanaClient } from './gaana.client';
 import GAANA_ROUTES from './gaana.routes';
 
@@ -12,11 +13,11 @@ export async function getById(id: string) {
         },
     });
 
-    return assertData(res.data, 'Album not found');
+    return assertData(res.data, '[Gaana] Album not found');
 }
 
 export async function getByLink(link: string) {
-    const seokey = extractSeoToken(link, 'gaana', 'album');
+    const seokey = extractId(link, 'gaana', 'album');
 
     const res = await gaanaClient.post<GaanaAlbumResponse>('/', null, {
         params: {
@@ -25,5 +26,31 @@ export async function getByLink(link: string) {
         },
     });
 
-    return assertData(res.data, 'Album not found');
+    return assertData(res.data, '[Gaana] Album not found');
+}
+
+export async function getSongs({ id, limit, offset }: { id: string; limit?: number; offset?: number }) {
+    const album = await getById(id);
+    const tracks = album.tracks ?? [];
+
+    if (limit === undefined) {
+        return createPaginatedResponse({
+            items: tracks,
+            total: tracks.length,
+            offset: 0,
+            limit: tracks.length,
+            hasNext: false,
+        });
+    }
+
+    const { limit: safeLimit, offset: safeOffset } = normalizePagination(limit, offset);
+    const paginated = tracks.slice(safeOffset, safeOffset + safeLimit);
+
+    return createPaginatedResponse({
+        items: paginated,
+        total: tracks.length,
+        offset: safeOffset,
+        limit: safeLimit,
+        hasNext: safeOffset + paginated.length < tracks.length,
+    });
 }

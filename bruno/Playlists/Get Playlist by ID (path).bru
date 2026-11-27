@@ -1,0 +1,15 @@
+meta {
+  name: Get Playlist by ID (path)
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/playlists/159144718?provider=saavn
+  body: none
+  auth: none
+}
+
+params:query {
+  provider: saavn
+}

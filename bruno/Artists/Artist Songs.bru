@@ -1,0 +1,19 @@
+meta {
+  name: Artist Songs
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/artists/459320/songs?limit=10&offset=0&sortBy=popularity&sortOrder=desc&provider=saavn
+  body: none
+  auth: none
+}
+
+params:query {
+  limit: 10
+  offset: 0
+  sortBy: popularity
+  sortOrder: desc
+  provider: saavn
+}

@@ -19,7 +19,11 @@ const successPlugin: FastifyPluginAsync = async (app) => {
 
             // helper to detect streams and buffers
             const isBuffer = Buffer.isBuffer(payload);
-            const isStream = payload && typeof (payload as any).pipe === 'function';
+            const isStream =
+                payload !== null &&
+                typeof payload === 'object' &&
+                'pipe' in payload &&
+                typeof (payload as { pipe?: unknown }).pipe === 'function';
             const isPlainObject =
                 payload !== null && typeof payload === 'object' && !Array.isArray(payload) && !isBuffer && !isStream;
 

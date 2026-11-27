@@ -1,5 +1,10 @@
-import { getAlbumById, getAlbumByLink } from '../services/album.service';
-import { idOrLinkWithProvider, idParam, providerQuery } from '../validators/common.validators';
+import { getAlbumById, getAlbumByLink, getAlbumSongs } from '../services/album.service';
+import {
+    idOrLinkWithProvider,
+    idParam,
+    optionalPaginationQuery,
+    providerQuery,
+} from '../validators/common.validators';
 import type { FastifyPluginAsync } from 'fastify';
 import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 
@@ -32,6 +37,25 @@ const albumsRoutes: FastifyPluginAsync = async (app) => {
             },
         },
         async (req) => getAlbumById(req.params.id, { provider: req.query.provider })
+    );
+
+    api.get(
+        '/albums/:id/songs',
+        {
+            schema: {
+                params: idParam,
+                querystring: optionalPaginationQuery.extend(providerQuery.shape),
+                tags: ['albums'],
+                summary: 'Retrieve album songs (returns all songs when limit is omitted)',
+            },
+        },
+        async (req) =>
+            getAlbumSongs({
+                id: req.params.id,
+                limit: req.query.limit,
+                offset: req.query.offset,
+                opts: { provider: req.query.provider },
+            })
     );
 };
 

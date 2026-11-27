@@ -1,5 +1,10 @@
-import { getPlaylistById, getPlaylistByLink } from '../services/playlist.service';
-import { idOrLinkWithProvider, idParam, providerQuery } from '../validators/common.validators';
+import { getPlaylistById, getPlaylistByLink, getPlaylistSongs } from '../services/playlist.service';
+import {
+    idOrLinkWithProvider,
+    idParam,
+    optionalPaginationQuery,
+    providerQuery,
+} from '../validators/common.validators';
 import type { FastifyPluginAsync } from 'fastify';
 import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 
@@ -32,6 +37,25 @@ const playlistsRoutes: FastifyPluginAsync = async (app) => {
             },
         },
         async (req) => getPlaylistById(req.params.id, { provider: req.query.provider })
+    );
+
+    api.get(
+        '/playlists/:id/songs',
+        {
+            schema: {
+                params: idParam,
+                querystring: optionalPaginationQuery.extend(providerQuery.shape),
+                tags: ['playlists'],
+                summary: 'Retrieve playlist songs (returns all songs when limit is omitted)',
+            },
+        },
+        async (req) =>
+            getPlaylistSongs({
+                id: req.params.id,
+                limit: req.query.limit,
+                offset: req.query.offset,
+                opts: { provider: req.query.provider },
+            })
     );
 };
 

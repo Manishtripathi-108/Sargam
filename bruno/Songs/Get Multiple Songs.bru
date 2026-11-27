@@ -1,0 +1,16 @@
+meta {
+  name: Get Multiple Songs
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/songs?ids=3IoDK8qI,5WXAlMNt&provider=saavn
+  body: none
+  auth: none
+}
+
+params:query {
+  ids: 3IoDK8qI,5WXAlMNt
+  provider: saavn
+}

@@ -1,0 +1,16 @@
+meta {
+  name: Get Song by Link
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/songs?link=https://www.jiosaavn.com/song/tum-hi-ho/EToxUyFpcXk&provider=saavn
+  body: none
+  auth: none
+}
+
+params:query {
+  link: https://www.jiosaavn.com/song/tum-hi-ho/EToxUyFpcXk
+  provider: saavn
+}

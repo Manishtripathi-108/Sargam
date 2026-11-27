@@ -1,0 +1,16 @@
+meta {
+  name: Song Suggestions
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/songs/3IoDK8qI/suggestions?limit=10&provider=saavn
+  body: none
+  auth: none
+}
+
+params:query {
+  limit: 10
+  provider: saavn
+}

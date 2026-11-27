@@ -22,6 +22,6 @@ saavnClient.interceptors.request.use((config) => {
         ctx: config.params?.ctx ?? 'web6dot0',
     };
 
-    config.headers['User-Agent'] = getRandomUserAgent();
+    config.headers.setUserAgent(getRandomUserAgent());
     return config;
 });

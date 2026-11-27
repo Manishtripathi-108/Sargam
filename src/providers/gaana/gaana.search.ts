@@ -21,7 +21,7 @@ export async function all(p: SearchParams) {
         },
     });
 
-    const data = assertData(res.data, 'No results found', (): boolean => {
+    const data = assertData(res.data, '[Gaana] No results found', (): boolean => {
         const groups = res.data?.gr;
         return !Array.isArray(groups) || !groups[0]?.gd;
     });
@@ -41,7 +41,7 @@ export async function songs(p: SearchParams) {
         },
     });
 
-    const data = assertData(res.data, 'No songs found', (): boolean => {
+    const data = assertData(res.data, '[Gaana] No songs found', (): boolean => {
         const groups = res.data?.gr;
         return !Array.isArray(groups) || !groups[0]?.gd;
     });
@@ -61,7 +61,7 @@ export async function albums(p: SearchParams) {
         },
     });
 
-    const data = assertData(res.data, 'No albums found', (): boolean => {
+    const data = assertData(res.data, '[Gaana] No albums found', (): boolean => {
         const groups = res.data?.gr;
         return !Array.isArray(groups) || !groups[0]?.gd;
     });
@@ -81,7 +81,7 @@ export async function artists(p: SearchParams) {
         },
     });
 
-    const data = assertData(res.data, 'No artists found', (): boolean => {
+    const data = assertData(res.data, '[Gaana] No artists found', (): boolean => {
         const groups = res.data?.gr;
         return !Array.isArray(groups) || !groups[0]?.gd;
     });
@@ -101,7 +101,7 @@ export async function playlists(p: SearchParams) {
         },
     });
 
-    const data = assertData(res.data, 'No playlists found', (): boolean => {
+    const data = assertData(res.data, '[Gaana] No playlists found', (): boolean => {
         const groups = res.data?.gr;
         return !Array.isArray(groups) || !groups[0]?.gd;
     });

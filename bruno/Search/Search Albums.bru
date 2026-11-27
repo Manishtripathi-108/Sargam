@@ -1,0 +1,18 @@
+meta {
+  name: Search Albums
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/search/albums?q=aashiqui 2&limit=10&offset=0&provider=saavn
+  body: none
+  auth: none
+}
+
+params:query {
+  q: aashiqui 2
+  limit: 10
+  offset: 0
+  provider: saavn
+}

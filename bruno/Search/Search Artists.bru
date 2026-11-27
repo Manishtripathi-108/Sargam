@@ -1,0 +1,18 @@
+meta {
+  name: Search Artists
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/search/artists?q=arijit singh&limit=10&offset=0&provider=saavn
+  body: none
+  auth: none
+}
+
+params:query {
+  q: arijit singh
+  limit: 10
+  offset: 0
+  provider: saavn
+}

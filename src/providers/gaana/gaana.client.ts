@@ -10,24 +10,19 @@ export const gaanaClient = axios.create({
         Connection: 'keep-alive',
         Host: 'gaana.com',
     },
+    params: {
+        country: 'IN',
+    },
 });
 
 gaanaClient.interceptors.request.use((config) => {
     const browserHeaders = getBrowserHeaders({ include: config.headers });
 
-    if (config.headers) {
-        for (const [key, value] of Object.entries(browserHeaders)) {
-            if (value !== undefined) {
-                config.headers.set(key, value);
-            }
+    for (const [key, value] of Object.entries(browserHeaders)) {
+        if (value !== undefined) {
+            config.headers.set(key, value);
         }
     }
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    config.params = {
-        country: 'IN',
-        ...config.params,
-    };
 
     return config;
 });

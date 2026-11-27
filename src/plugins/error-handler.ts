@@ -1,6 +1,7 @@
-import { formatZodValidationErrors } from '../utils/validation.utils';
+import { isDev } from '../utils/environment.utils';
 import { isAxiosError } from 'axios';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import type { ZodFastifySchemaValidationError } from 'fastify-type-provider-zod';
 import { hasZodFastifySchemaValidationErrors } from 'fastify-type-provider-zod';
 import http from 'http';
 
@@ -15,6 +16,23 @@ const isObject = (value: unknown): value is Record<string, unknown> => typeof va
 const getMessage = (value: unknown, fallback: string) =>
     typeof value === 'string' && value.length > 0 ? value : fallback;
 
+const normalizeZodPath = (path: string): string => {
+    const trimmed = path.replace(/^\/+/, '');
+    return trimmed || 'root';
+};
+
+const formatZodValidationErrors = (issues: ZodFastifySchemaValidationError[]) => {
+    return issues
+        .map((issue) => ({ path: normalizeZodPath(issue.instancePath), message: issue.message }))
+        .sort((a, b) => {
+            if (a.path < b.path) return -1;
+            if (a.path > b.path) return 1;
+            const msgA = a.message ?? '';
+            const msgB = b.message ?? '';
+            return msgA < msgB ? -1 : msgA > msgB ? 1 : 0;
+        });
+};
+
 const registerErrorHandler = async (app: FastifyInstance) => {
     app.setErrorHandler(async (err: unknown, req: FastifyRequest, reply: FastifyReply) => {
         // ensure the success flag is false for any error
@@ -25,6 +43,7 @@ const registerErrorHandler = async (app: FastifyInstance) => {
             req.log.warn({ url: req.url, method: req.method }, 'headers_already_sent');
             return;
         }
+
         // handle zod validation errors only
         if (hasZodFastifySchemaValidationErrors(err)) {
             try {
@@ -44,22 +63,25 @@ const registerErrorHandler = async (app: FastifyInstance) => {
             }
         }
 
+        // handle axios errors
         if (isAxiosError(err)) {
             const statusCode = err.response?.status ?? 502;
             const statusMessage = http.STATUS_CODES[statusCode] ?? 'Bad Gateway';
 
-            const message = getMessage(err.response?.data?.message ?? err.message, statusMessage);
+            const responseData = isObject(err.response?.data) ? err.response.data : null;
+            const message = getMessage(responseData?.message ?? err.message, statusMessage);
 
             req.log.error({ err, url: req.url, method: req.method }, 'axios_error');
 
             return reply.status(statusCode).send({
                 statusCode,
-                error: statusMessage,
+                error: isDev ? `Axios Error: ${statusMessage}` : statusMessage,
                 message,
                 success: false,
             });
         }
 
+        // generic error handling
         try {
             const httpErr: HttpLikeError | null = isObject(err) ? err : null;
 

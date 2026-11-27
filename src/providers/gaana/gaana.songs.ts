@@ -1,7 +1,6 @@
 import type { GaanaSongResponse } from '../../types/gaana';
-import { decryptAudio } from '../../utils/decrypt.utils';
 import { assertData } from '../../utils/error.utils';
-import { extractSeoToken } from '../../utils/url.utils';
+import { extractId } from '../../utils/url.utils';
 import { gaanaClient } from './gaana.client';
 import GAANA_ROUTES from './gaana.routes';
 
@@ -13,7 +12,7 @@ export async function getById(seokey: string) {
         },
     });
 
-    return assertData(res.data, 'Song not found');
+    return assertData(res.data, '[Gaana] Song not found');
 }
 
 export async function getByIds(seokeys: string) {
@@ -29,11 +28,11 @@ export async function getByIds(seokeys: string) {
     // console.log('🪵 > gaana.songs.ts:18 > getByIds > links:', links);
     // data.links = links;
 
-    return assertData(res.data, 'Song not found');
+    return assertData(res.data, '[Gaana] Song not found');
 }
 
 export async function getByLink(link: string) {
-    const seokey = extractSeoToken(link, 'gaana', 'song');
+    const seokey = extractId(link, 'gaana', 'song');
 
     const res = await gaanaClient.post<GaanaSongResponse>('/', null, {
         params: {
@@ -42,11 +41,11 @@ export async function getByLink(link: string) {
         },
     });
 
-    return assertData(res.data, 'Song not found');
+    return assertData(res.data, '[Gaana] Song not found');
 }
 
 export async function getSuggestions(seokey: string, limit: number) {
-    const res = await gaanaClient.post('/', null, {
+    const res = await gaanaClient.post<Record<string, unknown>>('/', null, {
         params: {
             seokey,
             limit,
@@ -54,18 +53,16 @@ export async function getSuggestions(seokey: string, limit: number) {
         },
     });
 
-    const data = assertData(res.data, 'No suggestions found');
-
-    return data;
+    return assertData(res.data, '[Gaana] No suggestions found');
 }
 
 export async function getLyrics(seokey: string) {
-    const res = await gaanaClient.post('/', null, {
+    const res = await gaanaClient.post<Record<string, unknown>>('/', null, {
         params: {
             seokey,
             type: GAANA_ROUTES.SONG.LYRICS,
         },
     });
 
-    const data = assertData(res.data, 'Lyrics not found');
+    return assertData(res.data, '[Gaana] Lyrics not found');
 }

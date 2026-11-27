@@ -1,0 +1,16 @@
+meta {
+  name: Get Album by Link
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/albums?link=https://www.jiosaavn.com/album/aashiqui-2/Le4GZ7BC1qc_&provider=saavn
+  body: none
+  auth: none
+}
+
+params:query {
+  link: https://www.jiosaavn.com/album/aashiqui-2/Le4GZ7BC1qc_
+  provider: saavn
+}

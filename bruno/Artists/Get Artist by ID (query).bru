@@ -1,0 +1,16 @@
+meta {
+  name: Get Artist by ID (query)
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/artists?id=459320&provider=saavn
+  body: none
+  auth: none
+}
+
+params:query {
+  id: 459320
+  provider: saavn
+}

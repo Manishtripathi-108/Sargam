@@ -1,0 +1,19 @@
+meta {
+  name: Global Search
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/search?q=arijit singh&type=all&limit=10&offset=0&provider=saavn
+  body: none
+  auth: none
+}
+
+params:query {
+  q: arijit singh
+  type: all
+  limit: 10
+  offset: 0
+  provider: saavn
+}

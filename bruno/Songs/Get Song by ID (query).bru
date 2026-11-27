@@ -1,0 +1,16 @@
+meta {
+  name: Get Song by ID (query)
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/songs?id=3IoDK8qI&provider=saavn
+  body: none
+  auth: none
+}
+
+params:query {
+  id: 3IoDK8qI
+  provider: saavn
+}

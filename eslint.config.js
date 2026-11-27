@@ -5,7 +5,17 @@ import globals from 'globals';
 
 export default [
     {
-        ignores: ['dist/**', 'node_modules/**', 'src/generated/**'],
+        ignores: [
+            'dist/**',
+            'node_modules/**',
+            '.agents/**',
+            '.claude/**',
+            '.cursor/**',
+            '.devin/**',
+            'migrations/**',
+            'src/prisma/**',
+            'prisma.config.ts',
+        ],
     },
     js.configs.recommended,
     {

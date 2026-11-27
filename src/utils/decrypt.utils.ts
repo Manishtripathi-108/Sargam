@@ -24,7 +24,7 @@ const buildAudioUrls = (baseUrl: string, pattern: string, qualities: AudioQualit
 const decryptGaana = (encrypted: string): SongAudio => {
     const ivPosition = Number(encrypted[0]);
     if (Number.isNaN(ivPosition)) {
-        throw new AppError('Invalid IV position in encrypted string', 400);
+        throw new AppError('[Gaana] Invalid IV position in encrypted string', 400);
     }
 
     const iv = Buffer.from(encrypted.slice(ivPosition, ivPosition + 16), 'utf8');
@@ -42,8 +42,8 @@ const decryptSaavn = (encrypted: string): SongAudio => {
     decipher.start();
     decipher.update(forge.util.createBuffer(forge.util.decode64(encrypted)));
     if (!decipher.finish()) {
-        throw new AppError('Failed to decrypt Saavn audio URL', 500);
-    };
+        throw new AppError('[Saavn] Failed to decrypt audio URL', 500);
+    }
 
     const baseUrl = upgradeToHttps(decipher.output.getBytes());
 
@@ -51,9 +51,8 @@ const decryptSaavn = (encrypted: string): SongAudio => {
 };
 
 export const decryptAudio = (provider: Provider, encrypted?: string): SongAudio => {
-    console.log('🪵 > decrypt.utils.ts:54 > decryptAudio > encrypted:', encrypted)
     if (!encrypted) {
-        throw new AppError('Encrypted string is required', 400);
+        throw new AppError(`[${provider}] Encrypted string is required`, 400);
     }
 
     switch (provider) {

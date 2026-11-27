@@ -1,0 +1,16 @@
+meta {
+  name: Get Playlist by Link
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/playlists?link=https://www.jiosaavn.com/featured/bollywood-hits/8MT-LQlP35c_&provider=saavn
+  body: none
+  auth: none
+}
+
+params:query {
+  link: https://www.jiosaavn.com/featured/bollywood-hits/8MT-LQlP35c_
+  provider: saavn
+}

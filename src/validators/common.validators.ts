@@ -19,7 +19,7 @@ export const positiveInt = (min = 1, max?: number) => {
 /**
  * Provider enum - saavn or gaana
  */
-export const providerEnum = z.enum(['saavn', 'gaana']);
+export const providerEnum = z.enum(['saavn', 'gaana', 'qobuz', 'tidal']);
 
 /**
  * Search type enum
@@ -90,10 +90,27 @@ export const idOrLinkQuery = z
     });
 
 /**
+ * Optional pagination query parameters (when limit is omitted, services return all items)
+ */
+export const optionalPaginationQuery = z.object({
+    limit: positiveInt(1, 100).optional(),
+    offset: positiveInt(0).default(0),
+});
+
+/**
  * Combined list query (pagination + sorting + provider)
  */
 export const listQuery = z.object({
-    ...paginationQuery.shape,
+    ...optionalPaginationQuery.shape,
+    ...sortingQuery.shape,
+    ...providerQuery.shape,
+});
+
+/**
+ * Songs query for album, playlist, artist songs
+ */
+export const songsListQuery = z.object({
+    ...optionalPaginationQuery.shape,
     ...sortingQuery.shape,
     ...providerQuery.shape,
 });

@@ -1,0 +1,18 @@
+meta {
+  name: Search Songs
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/search/songs?q=tum hi ho&limit=10&offset=0&provider=saavn
+  body: none
+  auth: none
+}
+
+params:query {
+  q: tum hi ho
+  limit: 10
+  offset: 0
+  provider: saavn
+}
