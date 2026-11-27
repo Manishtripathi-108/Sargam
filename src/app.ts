@@ -1,18 +1,21 @@
 import corsPlugin from './plugins/cors';
-import dbPlugin from './plugins/db';
 import envPlugin from './plugins/env';
 import registerErrorHandler from './plugins/error-handler';
 import jwtPlugin from './plugins/jwt';
 import successPlugin from './plugins/success';
 import apiRoutes from './routes/index';
 import { isDev } from './utils/environment.utils';
-import dotenv from 'dotenv';
 import fastify from 'fastify';
 import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 import { serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod';
+import { loadEnvFile } from 'node:process';
 
-// Load environment variables early so plugins can read them
-dotenv.config();
+// Load environment variables early so plugins and logger can read them
+try {
+    loadEnvFile();
+} catch {
+    // Ignore error if .env is missing or already set in the environment
+}
 
 const app = fastify({
     logger: isDev
@@ -37,7 +40,6 @@ app.register(envPlugin);
 app.register(corsPlugin);
 app.register(jwtPlugin);
 app.register(successPlugin);
-app.register(dbPlugin);
 
 // serializer & validator compilers (zod)
 app.setSerializerCompiler(serializerCompiler);

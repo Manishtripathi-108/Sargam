@@ -2,12 +2,14 @@ import type { SongAudio } from '../types/core/song.model';
 import type { Provider } from '../validators/common.validators';
 import { AppError } from './error.utils';
 import { upgradeToHttps } from './url.utils';
-import crypto from 'crypto';
-import forge from 'node-forge';
+import crypto from 'node:crypto';
 
 // Pre-computed keys
 const GAANA_KEY = Buffer.from('Z3kxdCNiQGpsKGIkd3RtZQ==', 'base64');
 const SAAVN_KEY = '38346591';
+// 3DES in ECB mode with 3 identical 8-byte keys is mathematically identical to single DES-ECB,
+// which is natively supported in OpenSSL 3.0+ without legacy crypto flags or third-party packages.
+const SAAVN_3DES_KEY = Buffer.from(SAAVN_KEY + SAAVN_KEY + SAAVN_KEY);
 
 type AudioQuality = readonly [string, string, string, string];
 
@@ -37,17 +39,15 @@ const decryptGaana = (encrypted: string): SongAudio => {
 };
 
 const decryptSaavn = (encrypted: string): SongAudio => {
-    const decipher = forge.cipher.createDecipher('DES-ECB', SAAVN_KEY);
+    try {
+        const decipher = crypto.createDecipheriv('des-ede3-ecb', SAAVN_3DES_KEY, null);
+        const cipherText = Buffer.from(encrypted, 'base64');
+        const baseUrl = decipher.update(cipherText, undefined, 'utf8') + decipher.final('utf8');
 
-    decipher.start();
-    decipher.update(forge.util.createBuffer(forge.util.decode64(encrypted)));
-    if (!decipher.finish()) {
+        return buildAudioUrls(upgradeToHttps(baseUrl), '_96', SAAVN_QUALITIES);
+    } catch {
         throw new AppError('[Saavn] Failed to decrypt audio URL', 500);
     }
-
-    const baseUrl = upgradeToHttps(decipher.output.getBytes());
-
-    return buildAudioUrls(upgradeToHttps(baseUrl), '_96', SAAVN_QUALITIES);
 };
 
 export const decryptAudio = (provider: Provider, encrypted?: string): SongAudio => {

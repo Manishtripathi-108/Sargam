@@ -62,8 +62,6 @@ export const normalizeQualityTags = (
                 set.add('DOLBY_ATMOS');
             } else if (tag === 'MQA') {
                 set.add('MQA');
-            } else {
-                set.add(tag);
             }
         }
     }
