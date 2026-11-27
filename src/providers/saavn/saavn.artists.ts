@@ -38,17 +38,18 @@ export async function getByLink(link: string): Promise<Artist> {
 export async function getSongs({
     id,
     limit,
-    offset,
-    sortBy,
-    sortOrder,
+    offset = 0,
+    sortBy = 'popularity',
+    sortOrder = 'desc',
 }: {
     id: string;
-    limit: number;
-    offset: number;
-    sortBy: string;
-    sortOrder: string;
+    limit?: number;
+    offset?: number;
+    sortBy?: string;
+    sortOrder?: string;
 }): Promise<Paginated<Song>> {
-    const { page } = normalizePagination(limit, offset);
+    const fetchLimit = limit ?? 100;
+    const { page, limit: safeLimit, offset: safeOffset } = normalizePagination(fetchLimit, offset);
 
     const res = await saavnClient.get<SaavnArtistSongsResponse>('/', {
         params: {
@@ -63,27 +64,29 @@ export async function getSongs({
     const data = assertData(res.data, '[Saavn] Artist not found');
 
     return createPaginatedResponse({
-        items: data.topSongs?.songs?.map(mapSong),
-        offset: (page - 1) * 10,
-        total: data.topSongs?.total,
-        hasNext: !data.topSongs.last_page,
+        items: data.topSongs?.songs?.map(mapSong) ?? [],
+        offset: safeOffset,
+        limit: limit === undefined ? data.topSongs?.songs?.length ?? safeLimit : safeLimit,
+        total: data.topSongs?.total ?? 0,
+        hasNext: !data.topSongs?.last_page,
     });
 }
 
 export async function getAlbums({
     id,
     limit,
-    offset,
-    sortBy,
-    sortOrder,
+    offset = 0,
+    sortBy = 'popularity',
+    sortOrder = 'desc',
 }: {
     id: string;
-    limit: number;
-    offset: number;
-    sortBy: string;
-    sortOrder: string;
+    limit?: number;
+    offset?: number;
+    sortBy?: string;
+    sortOrder?: string;
 }): Promise<Paginated<Omit<Album, 'songs'>>> {
-    const { page } = normalizePagination(limit, offset);
+    const fetchLimit = limit ?? 50;
+    const { page, limit: safeLimit, offset: safeOffset } = normalizePagination(fetchLimit, offset);
 
     const res = await saavnClient.get<SaavnArtistAlbumsResponse>('/', {
         params: {
@@ -98,9 +101,10 @@ export async function getAlbums({
     const data = assertData(res.data, '[Saavn] Artist not found');
 
     return createPaginatedResponse({
-        items: data.topAlbums?.albums?.map(mapAlbumBase),
-        offset: (page - 1) * 10,
-        total: data.topAlbums?.total,
-        hasNext: !data.topAlbums.last_page,
+        items: data.topAlbums?.albums?.map(mapAlbumBase) ?? [],
+        offset: safeOffset,
+        limit: limit === undefined ? data.topAlbums?.albums?.length ?? safeLimit : safeLimit,
+        total: data.topAlbums?.total ?? 0,
+        hasNext: !data.topAlbums?.last_page,
     });
 }

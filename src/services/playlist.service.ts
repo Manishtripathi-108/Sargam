@@ -24,3 +24,20 @@ export async function getPlaylistByLink(link: string, opts: ServiceOptions) {
         return wrapError(err, 'Failed to fetch playlist', 500);
     }
 }
+
+export async function getPlaylistSongs(params: {
+    id: string;
+    offset?: number;
+    limit?: number;
+    opts: ServiceOptions;
+}) {
+    if (!params.id) {
+        throw new AppError('Playlist id is required', 400);
+    }
+
+    try {
+        return await resolveProvider(params.opts).playlists.getSongs(params);
+    } catch (err) {
+        return wrapError(err, 'Failed to fetch playlist songs', 500);
+    }
+}

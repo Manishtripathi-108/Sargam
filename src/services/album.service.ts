@@ -24,3 +24,20 @@ export async function getAlbumByLink(link: string, opts: ServiceOptions) {
         return wrapError(err, 'Failed to fetch album', 500);
     }
 }
+
+export async function getAlbumSongs(params: {
+    id: string;
+    offset?: number;
+    limit?: number;
+    opts: ServiceOptions;
+}) {
+    if (!params.id) {
+        throw new AppError('Album id is required', 400);
+    }
+
+    try {
+        return await resolveProvider(params.opts).albums.getSongs(params);
+    } catch (err) {
+        return wrapError(err, 'Failed to fetch album songs', 500);
+    }
+}

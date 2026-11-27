@@ -33,8 +33,8 @@ export async function getTopTracks({
     offset,
 }: {
     id: string;
-    limit: number;
-    offset: number;
+    limit?: number;
+    offset?: number;
 }): Promise<ReturnType<typeof createPaginatedResponse<QobuzTopTrack>>> {
     const { limit: safeLimit, offset: safeOffset } = normalizePagination(limit, offset);
 
@@ -63,8 +63,8 @@ export async function getAlbums({
     releaseType,
 }: {
     id: string;
-    limit: number;
-    offset: number;
+    limit?: number;
+    offset?: number;
     releaseType?: string;
 }): Promise<ReturnType<typeof createPaginatedResponse<QobuzReleaseItem>>> {
     const { limit: safeLimit, offset: safeOffset } = normalizePagination(limit, offset);

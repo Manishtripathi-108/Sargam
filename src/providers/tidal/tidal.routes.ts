@@ -42,6 +42,7 @@ const TIDAL_ROUTES = {
             MEDIUM: '320x320',
             LARGE: '640x640',
             XL: '1280x1280',
+            ORIGIN: 'origin',
         },
     },
 } as const;

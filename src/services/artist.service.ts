@@ -28,10 +28,10 @@ export async function getArtistByLink(link: string, opts: ServiceOptions) {
 
 export async function getArtistSongs(params: {
     id: string;
-    offset: number;
-    limit: number;
-    sortBy: SortBy;
-    sortOrder: SortOrder;
+    offset?: number;
+    limit?: number;
+    sortBy?: SortBy;
+    sortOrder?: SortOrder;
     opts: ServiceOptions;
 }) {
     if (!params.id) {
@@ -39,7 +39,11 @@ export async function getArtistSongs(params: {
     }
 
     try {
-        return await resolveProvider(params.opts).artists.getSongs(params);
+        return await resolveProvider(params.opts).artists.getSongs({
+            ...params,
+            sortBy: params.sortBy ?? 'popularity',
+            sortOrder: params.sortOrder ?? 'desc',
+        });
     } catch (err) {
         return wrapError(err, 'Failed to fetch artist songs', 500);
     }
@@ -47,10 +51,10 @@ export async function getArtistSongs(params: {
 
 export async function getArtistAlbums(params: {
     id: string;
-    offset: number;
-    limit: number;
-    sortBy: SortBy;
-    sortOrder: SortOrder;
+    offset?: number;
+    limit?: number;
+    sortBy?: SortBy;
+    sortOrder?: SortOrder;
     opts: ServiceOptions;
 }) {
     if (!params.id) {
@@ -58,7 +62,11 @@ export async function getArtistAlbums(params: {
     }
 
     try {
-        return await resolveProvider(params.opts).artists.getAlbums(params);
+        return await resolveProvider(params.opts).artists.getAlbums({
+            ...params,
+            sortBy: params.sortBy ?? 'popularity',
+            sortOrder: params.sortOrder ?? 'desc',
+        });
     } catch (err) {
         return wrapError(err, 'Failed to fetch artist albums', 500);
     }

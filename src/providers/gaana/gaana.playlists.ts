@@ -1,5 +1,6 @@
 import type { GaanaPlaylistResponse } from '../../types/gaana';
 import { assertData } from '../../utils/error.utils';
+import { createPaginatedResponse, normalizePagination } from '../../utils/pagination.utils';
 import { extractId } from '../../utils/url.utils';
 import { gaanaClient } from './gaana.client';
 import GAANA_ROUTES from './gaana.routes';
@@ -30,4 +31,30 @@ export async function getByLink(link: string) {
     });
 
     return assertData(res.data, '[Gaana] Playlist not found');
+}
+
+export async function getSongs({ id, limit, offset }: { id: string; limit?: number; offset?: number }) {
+    const playlist = await getById(id);
+    const tracks = playlist.tracks ?? [];
+
+    if (limit === undefined) {
+        return createPaginatedResponse({
+            items: tracks,
+            total: tracks.length,
+            offset: 0,
+            limit: tracks.length,
+            hasNext: false,
+        });
+    }
+
+    const { limit: safeLimit, offset: safeOffset } = normalizePagination(limit, offset);
+    const paginated = tracks.slice(safeOffset, safeOffset + safeLimit);
+
+    return createPaginatedResponse({
+        items: paginated,
+        total: tracks.length,
+        offset: safeOffset,
+        limit: safeLimit,
+        hasNext: safeOffset + paginated.length < tracks.length,
+    });
 }

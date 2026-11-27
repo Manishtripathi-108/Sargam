@@ -34,16 +34,17 @@ export async function getSongs({
     id,
     limit,
     offset,
-    sortBy,
-    sortOrder,
+    sortBy = 'popularity',
+    sortOrder = 'desc',
 }: {
     id: string;
-    limit: number;
-    offset: number;
-    sortBy: string;
-    sortOrder: string;
+    limit?: number;
+    offset?: number;
+    sortBy?: string;
+    sortOrder?: string;
 }) {
-    const { page } = normalizePagination(limit, offset);
+    const fetchLimit = limit ?? 10;
+    const { page } = normalizePagination(fetchLimit, offset);
 
     const res = await gaanaClient.post<GaanaArtistTrackResponse>('/', null, {
         params: {
@@ -69,16 +70,17 @@ export async function getAlbums({
     id,
     limit,
     offset,
-    sortBy,
-    sortOrder,
+    sortBy = 'popularity',
+    sortOrder = 'desc',
 }: {
     id: string;
-    limit: number;
-    offset: number;
-    sortBy: string;
-    sortOrder: string;
+    limit?: number;
+    offset?: number;
+    sortBy?: string;
+    sortOrder?: string;
 }) {
-    const { page } = normalizePagination(limit, offset);
+    const fetchLimit = limit ?? 10;
+    const { page } = normalizePagination(fetchLimit, offset);
     // Todo: GAANA has different sort by options for albums, need to map accordingly (release-date and popularity)
 
     const res = await gaanaClient.post<GaanaArtistTrackResponse>('/', null, {

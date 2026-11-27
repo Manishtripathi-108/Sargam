@@ -1,13 +1,15 @@
+import axios, { type AxiosError } from 'axios';
 import { getBrowserHeaders } from '../../constants/user-agents.constants';
 import { AppError } from '../../utils/error.utils';
 import { getAccessToken, resetToken } from './tidal.auth';
 import TIDAL_ROUTES from './tidal.routes';
-import axios, { type AxiosError } from 'axios';
 
 type TidalErrorResponse = {
     status?: number;
     subStatus?: number;
     userMessage?: string;
+    error?: string;
+    error_description?: string;
 };
 
 export const getCountryCode = () => process.env.TIDAL_COUNTRY_CODE || 'US';
@@ -55,31 +57,50 @@ tidalClient.interceptors.request.use(async (config) => {
 
 tidalClient.interceptors.response.use(
     (response) => response,
-    (error: AxiosError<TidalErrorResponse>) => {
-        if (error.response) {
-            const { status, data } = error.response;
+    (error: unknown) => {
+        if (error instanceof AppError) {
+            throw error;
+        }
 
-            if (status === 401) {
+        const axiosErr = error as AxiosError<TidalErrorResponse>;
+        if (axiosErr.response) {
+            const { status, data } = axiosErr.response;
+
+            if (
+                status === 401 ||
+                (status === 400 &&
+                    (data?.error === 'invalid_grant' ||
+                        data?.error_description?.toLowerCase().includes('client credentials')))
+            ) {
                 resetToken();
-                throw new AppError('[Tidal] Authentication failed', 401);
+                const reason =
+                    data?.error_description ||
+                    data?.userMessage ||
+                    'Invalid client credentials or expired token';
+                throw new AppError(
+                    `[Tidal] Authentication failed: ${reason}. Please verify TIDAL_CLIENT_ID and TIDAL_CLIENT_SECRET in your .env file`,
+                    401
+                );
             }
+
+            const message = data?.userMessage || data?.error_description || data?.error;
 
             switch (status) {
                 case 403:
-                    throw new AppError('[Tidal] Access forbidden', 403);
+                    throw new AppError(message || '[Tidal] Access forbidden', 403);
                 case 404:
-                    throw new AppError(data?.userMessage || '[Tidal] Resource not found', 404);
+                    throw new AppError(message || '[Tidal] Resource not found', 404);
                 case 429:
-                    throw new AppError('[Tidal] Rate limit exceeded', 429);
+                    throw new AppError(message || '[Tidal] Rate limit exceeded', 429);
                 default:
-                    throw new AppError(data?.userMessage || `[Tidal] API error: ${status}`, status);
+                    throw new AppError(message || `[Tidal] API error: ${status}`, status);
             }
         }
 
-        if (error.code === 'ECONNABORTED') {
+        if (axiosErr.code === 'ECONNABORTED') {
             throw new AppError('[Tidal] Request timeout', 408);
         }
 
-        throw new AppError(`[Tidal] Connection error: ${error.message}`, 500);
+        throw new AppError(`[Tidal] Connection error: ${axiosErr.message}`, 500);
     }
 );

@@ -19,7 +19,7 @@ export async function getByLink(link: string) {
     return getById(id);
 }
 
-export async function getTracks({ id, limit, offset }: { id: string; limit: number; offset: number }) {
+export async function getTracks({ id, limit, offset }: { id: string; limit?: number; offset?: number }) {
     const { limit: safeLimit, offset: safeOffset } = normalizePagination(limit, offset);
 
     // Qobuz returns tracks in the playlist response
@@ -46,3 +46,5 @@ export async function getTracks({ id, limit, offset }: { id: string; limit: numb
         hasNext: safeOffset + paginatedTracks.length < playlist.tracks.total,
     });
 }
+
+export const getSongs = getTracks;

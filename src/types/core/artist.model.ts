@@ -12,5 +12,11 @@ export type Artist = Prettify<
         bio: string | null;
         image: ImageAsset;
         follower_count: number;
+
+        // Enriched fields:
+        popularity: number | null;
+        roles: string[];
+        artist_types: string[];
+        url: string | null;
     }
 >;

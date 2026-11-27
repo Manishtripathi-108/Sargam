@@ -46,7 +46,7 @@ Request → Route → Service → Provider → External API
 
 - All providers map to the same core types in `src/types/core/`:
     - `Song`, `SongBase`, `Album`, `AlbumBase`, `Artist`, `ArtistBase`, `Playlist`, `PlaylistBase`
-    - `ImageAsset` (`{ low, medium, high }`)
+    - `ImageAsset` (`{ low, medium, high, ultra, original }`)
     - `Paginated<T>` (`{ items, total, limit, offset, hasNext }`)
     - Search types: `GlobalSearchResult`, `SearchSong`, `SearchAlbum`, `SearchArtist`, `SearchPlaylist`, `SearchParams`, `GlobalSearchParams`
 - **Never change core model shapes** without updating ALL provider mappers

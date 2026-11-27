@@ -1,6 +1,9 @@
 import type { Album } from '../../types/core/album.model';
+import type { Paginated } from '../../types/core/pagination.model';
+import type { SongBase } from '../../types/core/song.model';
 import type { SaavnAlbumResponse } from '../../types/saavn';
 import { assertData } from '../../utils/error.utils';
+import { createPaginatedResponse, normalizePagination } from '../../utils/pagination.utils';
 import { extractId } from '../../utils/url.utils';
 import { saavnClient } from './saavn.client';
 import { mapAlbum } from './saavn.mapper';
@@ -29,4 +32,38 @@ export async function getByLink(link: string): Promise<Album> {
     });
 
     return mapAlbum(assertData(res.data, '[Saavn] Album not found'));
+}
+
+export async function getSongs({
+    id,
+    limit,
+    offset,
+}: {
+    id: string;
+    limit?: number;
+    offset?: number;
+}): Promise<Paginated<SongBase>> {
+    const album = await getById(id);
+    const songs = album.songs ?? [];
+
+    if (limit === undefined) {
+        return createPaginatedResponse({
+            items: songs,
+            total: songs.length,
+            offset: 0,
+            limit: songs.length,
+            hasNext: false,
+        });
+    }
+
+    const { limit: safeLimit, offset: safeOffset } = normalizePagination(limit, offset);
+    const paginatedItems = songs.slice(safeOffset, safeOffset + safeLimit);
+
+    return createPaginatedResponse({
+        items: paginatedItems,
+        total: songs.length,
+        offset: safeOffset,
+        limit: safeLimit,
+        hasNext: safeOffset + paginatedItems.length < songs.length,
+    });
 }

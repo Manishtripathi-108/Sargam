@@ -20,10 +20,12 @@ export const decodeHtmlEntities = (value?: string | null): string | null =>
 /**
  * Returns an ImageAsset with all quality levels set to the fallback audio cover image.
  * Used when no image is provided for an audio entity.
- * @returns An ImageAsset with low, medium, and high fields set to the fallback image.
+ * @returns An ImageAsset with low, medium, high, ultra, and original fields set to the fallback image.
  */
 export const createFallbackImageAsset = (): ImageAsset => ({
     low: IMAGE_FALLBACKS.AUDIO_COVER,
     medium: IMAGE_FALLBACKS.AUDIO_COVER,
     high: IMAGE_FALLBACKS.AUDIO_COVER,
+    ultra: IMAGE_FALLBACKS.AUDIO_COVER,
+    original: IMAGE_FALLBACKS.AUDIO_COVER,
 });

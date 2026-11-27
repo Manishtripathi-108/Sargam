@@ -1,5 +1,4 @@
 import type { GaanaSongResponse } from '../../types/gaana';
-import { decryptAudio } from '../../utils/decrypt.utils';
 import { assertData } from '../../utils/error.utils';
 import { extractId } from '../../utils/url.utils';
 import { gaanaClient } from './gaana.client';
