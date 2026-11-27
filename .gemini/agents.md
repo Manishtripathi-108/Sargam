@@ -116,6 +116,7 @@ Request → Route → Service → Provider → External API
 - **Prettier**: 4-space indent, single quotes, trailing commas (es5), 120 char width, LF line endings
 - **ESLint**: strict TypeScript checking (`strictTypeChecked` rules), type-imports enforced
 - **Naming**: files use `kebab-case` with dot-delimited suffixes (e.g., `search.routes.ts`, `saavn.mapper.ts`)
+- **Comment**: Add comments only when they explain intent, constraints, or non-obvious behavior. Do not add decorative separator comments or redundant comment blocks.
 - **Imports**: sorted by `@trivago/prettier-plugin-sort-imports`
 
 ---
