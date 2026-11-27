@@ -9,6 +9,3 @@ dist/
 
 # Environment variables
 .env
-
-# Generated files
-/src/generated/prisma

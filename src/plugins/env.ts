@@ -4,7 +4,7 @@ import type { FastifyPluginAsync } from 'fastify';
 // Define the expected environment variables schema
 const envSchema = {
     type: 'object',
-    required: ['JWT_SECRET', 'CLIENT_URLS', 'DATABASE_URL', 'QOBUZ_APP_ID'],
+    required: ['JWT_SECRET', 'CLIENT_URLS', 'QOBUZ_APP_ID'],
     properties: {
         // App
         PORT: { type: 'number', default: 3000 },
@@ -12,9 +12,6 @@ const envSchema = {
         APP_NAME: { type: 'string', default: 'sargam' },
         APP_URL: { type: 'string', default: 'http://localhost:3000' },
         JWT_SECRET: { type: 'string' },
-
-        // Database
-        DATABASE_URL: { type: 'string' },
 
         // Spotify
         SPOTIFY_API_URL: { type: 'string', default: 'https://api.spotify.com/v1' },

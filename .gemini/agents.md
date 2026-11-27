@@ -1,6 +1,6 @@
 # Sargam — Agent Instructions
 
-> Music streaming aggregation API built with **Fastify 5 + TypeScript + Prisma + Zod**.
+> Music streaming aggregation API built with **Fastify 5 + TypeScript + Zod**.
 > Proxies Saavn, Gaana, Qobuz, and Tidal into a unified response format.
 
 ---
@@ -78,27 +78,18 @@ Request → Route → Service → Provider → External API
 - `noImplicitAny: true` — **never disable**
 - Use `type` imports (`import type { ... }`) — enforced by ESLint
 - No `any` — `@typescript-eslint/no-explicit-any: error`
-- Generated Prisma types go to `src/generated/prisma/` — **never edit generated files**
 
 ### 7. Module System
 
 - ESM only (`"type": "module"` in package.json, `"module": "ESNext"` in tsconfig)
 - **Never** use `require()` or CommonJS
 
-### 8. Database
-
-- Prisma with PostgreSQL via `@prisma/adapter-pg`
-- Generated client output: `src/generated/prisma/`
-- Prisma config: `prisma.config.ts`, schema: `prisma/schema.prisma`
-- DB plugin handles singleton PrismaClient, connection retries, graceful shutdown
-- Access via `app.db` (decorated by db plugin)
-
-### 9. Authentication
+### 8. Authentication
 
 - JWT via `@fastify/jwt` — secret from `JWT_SECRET` env var
 - Token expiry: 15 minutes (sign config)
 
-### 10. Secrets & Decryption
+### 9. Secrets & Decryption
 
 - `src/utils/decrypt.utils.ts` handles Gaana AES-128-CBC and Saavn DES-ECB decryption
 - **Never** log decryption keys, secrets, or tokens
@@ -176,9 +167,6 @@ Request → Route → Service → Provider → External API
 | `npm run dev`         | Start dev server (tsx watch) |
 | `npm run build`       | TypeScript compile           |
 | `npm start`           | Run compiled JS              |
-| `npm run db:generate` | Regenerate Prisma client     |
-| `npm run db:mig:dev`  | Create migration             |
-| `npm run db:studio`   | Open Prisma Studio           |
 | `npm run lint`        | ESLint check                 |
 | `npm run format`      | Prettier format              |
 
@@ -187,7 +175,6 @@ Request → Route → Service → Provider → External API
 ## Performance Guidelines
 
 - Axios clients use interceptors for auth headers — don't duplicate
-- PrismaClient is singleton in dev (global cache prevents hot-reload leaks)
 - Pagination is normalized via `normalizePagination()` — always use it
 - Image URLs are upgraded to HTTPS via `upgradeToHttps()` — always use it
 - User agents are randomized per request — already handled by client interceptors
@@ -201,7 +188,6 @@ Request → Route → Service → Provider → External API
 - ❌ Don't create new Axios instances outside provider clients
 - ❌ Don't use `console.log` — use Fastify's Pino logger (`app.log` / `req.log`)
 - ❌ Don't add `success` field manually — the plugin handles it
-- ❌ Don't modify generated Prisma files
 - ❌ Don't use CommonJS (`require`, `module.exports`)
 - ❌ Don't skip Zod validation on routes
 - ❌ Don't commit `.env` or log secrets
